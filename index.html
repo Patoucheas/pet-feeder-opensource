@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bowl Butler Pro</title>
+    <link rel="icon" href="petfeederlogo.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('bgd.png');
+            background-repeat: repeat; 
+            background-size: cover; 
+            background-attachment: fixed; 
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333; 
+        }
+    
+        h1 {
+            font-size: 2.5em;
+            color: #333; 
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+            
+        }
+
+        h2 {
+            margin-top: 0.5em; 
+            margin-bottom: 0.5em; 
+        }
+    
+        .feed-container {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border-radius: 15px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.268);
+            margin-bottom: 10px;
+        }
+    
+        #feedNow {
+            background-color: #8c977d; 
+            border: 4px solid #ffffff; 
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 150px; 
+            height: 150px; 
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.395);
+            transition: all 0.3s ease;
+
+            /* Flexbox for centering content */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #feedNow:hover {
+            background-color: #7d8771; 
+        }
+    
+        #lastFeedingTime {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #8c977d; 
+        }
+    
+        .schedule, input[type=time], button {
+            margin: 10px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+    
+        button {
+            background-color: #8c977d; 
+            color: white;
+        }
+    
+        button:hover {
+            background-color: #7d8771; 
+        }
+
+        .delete-button {
+            background-color: #ff6b6b; /* Soft red for delete buttons */
+            color: white;
+        }
+
+        .delete-button:hover {
+            background-color: #e63939; /* Darker red for hover on delete buttons */
+        }
+
+        .section-separator {
+            height: 1px;
+            background: rgba(0, 0, 0, 0.537);
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+    
+        @media (max-width: 600px) {
+            .feed-container {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Container for Feed Now and Last Feeding Time -->
+    <div class="feed-container">
+        <!-- Feed Now Button -->
+        <h1>Bowl Butler Pro</h1>
+
+        <!-- Feed Now Button -->
+        <button id="feedNow">Feed Now</button>
+
+        <!-- Last Feeding Time Display -->
+        <h2>Last Feeding Time</h2>
+        <div id="lastFeedingTime"></div>
+
+        <!-- Seperation Line -->
+        <div class="section-separator"></div>
+
+        <!-- Add Schedule Form -->
+        <h2>Schedule a Feeding</h2>
+        <input type="time" id="scheduleTime">
+        <button id="addSchedule">Add Schedule</button>
+        
+        <!-- Seperation Line -->
+        <div class="section-separator"></div>
+
+        <!-- Scheduled Times -->
+        <h2>Meal Plan</h2>
+        <div id="scheduledTimes"></div>
+    </div>  
+    <script>
+        // Function to fetch and display scheduled feedings
+        function getSchedules() {
+            fetch('/get-schedules')
+                .then(response => response.json())
+                .then(schedules => {
+                    // Sort the schedules array in ascending order
+                    schedules.sort((a, b) => {
+                        return new Date('1970/01/01 ' + a) - new Date('1970/01/01 ' + b);
+                    });
+
+                    const scheduleContainer = document.getElementById('scheduledTimes');
+                    scheduleContainer.innerHTML = '';
+                    schedules.forEach(time => {
+                        const formattedTime = convertTo12HourFormat(time);
+                        const div = document.createElement('div');
+                        div.className = 'schedule';
+                        div.textContent = formattedTime + ' ';
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = 'Delete';
+                        deleteButton.className = 'delete-button';
+                        deleteButton.onclick = () => deleteSchedule(time);
+                        div.appendChild(deleteButton);
+                        scheduleContainer.appendChild(div);
+                    });
+                });
+        }
+
+        // Function to convert 24-hour time to 12-hour format
+        function convertTo12HourFormat(time) {
+            const [hours, minutes] = time.split(':');
+            const hour = parseInt(hours, 10);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const convertedHour = hour % 12 || 12;
+            return `${convertedHour}:${minutes} ${ampm}`;
+        }
+
+        // Function to add a new schedule
+        document.getElementById('addSchedule').onclick = () => {
+            const time = document.getElementById('scheduleTime').value;
+            fetch('/schedule-feeding', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ time })
+            }).then(() => getSchedules());
+        };
+
+        // Function to delete a schedule
+        function deleteSchedule(time) {
+            fetch('/delete-schedule', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ time })
+            }).then(() => getSchedules());
+        }
+
+        // Function to fetch and display the last feeding time
+        function getLastFeedingTime() {
+            fetch('/last-feeding')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.lastFeeding === null || data.lastFeeding === '') {
+                        document.getElementById('lastFeedingTime').textContent = 'No feedings yet';
+                    } else {
+                        const date = new Date(data.lastFeeding);
+                        let formattedDate = '';
+                        const today = new Date();
+                        if (date.toDateString() === today.toDateString()) {
+                            formattedDate = `Today at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
+                        } else {
+                            formattedDate = `${date.toLocaleDateString('en-US')} at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
+                        }
+                        document.getElementById('lastFeedingTime').textContent = formattedDate;
+                    }
+                });
+        }
+
+        // Function to trigger immediate feeding
+        document.getElementById('feedNow').onclick = () => {
+            fetch('/feed', { method: 'POST' })
+                .then(() => getLastFeedingTime());
+        };
+
+        // Function to periodically update the last feeding time
+        function updateLastFeedingPeriodically() {
+            setInterval(() => {
+                getLastFeedingTime();
+            }, 1000); // Update every second
+        }
+
+        // Load scheduled feedings and the last feeding time on page load
+        getSchedules();
+        getLastFeedingTime();
+
+        // Start the periodic update
+        updateLastFeedingPeriodically();
+    </script>
+</body>
+</html>

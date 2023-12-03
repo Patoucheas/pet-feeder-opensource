@@ -1,0 +1,111 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-image: url('bgd.png');
+    background-repeat: repeat; 
+    background-size: cover; 
+    background-attachment: fixed; 
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #333; 
+}
+
+h1 {
+    font-size: 2.5em;
+    color: #333; 
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    
+}
+
+h2 {
+    margin-top: 0.5em; 
+    margin-bottom: 0.5em; 
+}
+
+.feed-container {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-radius: 15px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.268);
+    margin-bottom: 10px;
+}
+
+#feedNow {
+    background-color: #8c977d; 
+    border: 4px solid #ffffff; 
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 150px; 
+    height: 150px; 
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.395);
+    transition: all 0.3s ease;
+
+    /* Flexbox for centering content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#feedNow:hover {
+    background-color: #7d8771; 
+}
+
+#lastFeedingTime {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #8c977d; 
+}
+
+.schedule, input[type=time], button {
+    margin: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+button {
+    background-color: #8c977d; 
+    color: white;
+}
+
+button:hover {
+    background-color: #7d8771; 
+}
+
+.delete-button {
+    background-color: #ff6b6b; /* Soft red for delete buttons */
+    color: white;
+}
+
+.delete-button:hover {
+    background-color: #e63939; /* Darker red for hover on delete buttons */
+}
+
+.section-separator {
+    height: 1px;
+    background: rgba(0, 0, 0, 0.537);
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+@media (max-width: 600px) {
+    .feed-container {
+        width: 95%;
+        padding: 20px;
+    }
+}

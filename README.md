@@ -30,7 +30,7 @@ The server, built using Node.js, manages the IoT device's operations and user in
 ### Mobile Web UI
 A responsive web interface that adapts to various devices, allowing full control and monitoring of the pet feeder remotely.
 
-![Feeding Schedule Interface](https://github.com/Patoucheas/pet-feeder/blob/main/BowlButlerWebUI.png)
+![Feeding Schedule Interface](https://github.com/Patoucheas/pet-feeder-opensource/blob/main/BowlButlerWebUI.png)
 
 #### Features:
 - **'Feed Now' Button**: Instantly activate the feeder from anywhere.
